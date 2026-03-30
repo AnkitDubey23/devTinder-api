@@ -4,11 +4,15 @@ const User = require("./models/user");
 
 const app = express();
 
+// express.json() is the middlewear provided by express
+// to make json readable js.
 app.use(express.json())
 
 app.post("/signup", async(req, res) => {
+    //Dynamic Data in request body by sending payload.
     const user = new User(req.body)
     try {
+        // Save data to db
         await user.save()
         res.send("User added successfully..")
     } catch(err) {
@@ -16,6 +20,8 @@ app.post("/signup", async(req, res) => {
     }
 })
 
+// connect db before listening to port
+// use then and catch methods for error handling
 connectDb()
   .then(() => {
     console.log("Database connected successfully..");
