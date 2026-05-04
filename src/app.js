@@ -20,6 +20,60 @@ app.post("/signup", async(req, res) => {
     }
 })
 
+// Get API fo find one user with email filter
+// Always use async await whenevr making connection to db 
+// for fetching data/sending data/updating data/ deleting data
+app.get("/user", async (req, res) => {
+    const userEmail = req.body.email;
+    try {
+        const users = await User.find({email: userEmail})
+        if(users.length === 0) {
+            res.status(404).send("User not found")
+        } else {
+            res.send(users)
+        }
+    } catch(err) {
+        res.status(400).send("Something went wrong")
+    }
+})
+
+// Get API - GET: /feed - Fetch all the user from DB.
+app.get("/feed", async (req, res) => {
+    try {
+        const user = await User.find({})
+        res.send(user)
+    }  catch(err) {
+        res.status(400).send("Something went wrong")
+    }
+})
+
+// Delete API to deleted user based on ID
+app.delete("/user", async(req, res) => {
+    const userId = req.body.userId
+    try {
+        const deleteUser = await User.findByIdAndDelete(userId)
+        res.send(deleteUser.firstName + ":" + " User deleted successfully")
+    } catch(err) {
+        res.status(400).send("Something went wrong")
+    }
+})
+
+// PATCH API to update the data
+app.patch("/user", async(req, res) => {
+    const userId = req.body.userId
+    const data = req.body;
+    try {
+      const user = await User.findByIdAndUpdate({_id: userId}, data, {
+        returnDocument: "after",
+        runValidators: true
+        })
+        console.log(user)
+        res.send("Data updated successfully")
+    }catch(err) {
+        res.status(400).send("UPDATE FAILED:" + err.message)
+    }
+})
+
 // connect db before listening to port
 // use then and catch methods for error handling
 connectDb()
